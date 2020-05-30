@@ -8,17 +8,44 @@ This is an example of building a OpenAPI-enabled JAX-RS server.
 This example uses the [JAX-RS](https://jax-rs-spec.java.net/) framework.
 Jersey is used as JAX-RS implementation, `io.swagger:swagger-jersey2-jaxrs` is used to derive the OpenAPI Specification from the annotated code.
 
+To generate the model files, run the following command:-
+./gradlew cleanSources openApiGenerate
+
 To run the server, please execute the following:
 
 ```
 mvn clean package jetty:run
 ```
+To debug the application on jetty server, run the following:-
+export MAVEN_OPTS="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+
+Then start jetty using -
+mvn jetty:run
 
 You can then view the OpenAPI v2 specification here:
 
 ```
-http://localhost:8080/sample/swagger.json
+http://localhost:8080/samarthgupta437/HRCrud/1.0.0/swagger.json
 ```
 
 Note that if you have configured the `host` to be something other than localhost, the calls through
 swagger-ui will be directed to that host and not localhost!
+
+For example to test the rest API's use the below mentioned URL:-
+@POST
+http://localhost:8084/SwaggerUseageTemplate/employees (place a post request with proper payload on this URL to create a employee)
+
+Sample employee payload :-
+{
+    "firstName": "Sumit",
+    "lastName": "Saha",
+    "designation": "Software Dev",
+    "employeeConfiguration": {
+        "employeeType": "DEVELOPER",
+        "startDate": "01/01/2019",
+        "projectName": "sample project"
+    }
+}
+
+@GET
+http://localhost:8084/SwaggerUseageTemplate/employees/1
