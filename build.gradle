@@ -1,0 +1,93 @@
+buildscript {
+    dependencies {
+        classpath "org.openapitools:openapi-generator-gradle-plugin:4.0.0"
+    }
+}
+
+plugins {
+    id 'java'
+}
+
+apply plugin: 'java'
+apply plugin: 'org.openapi.generator'
+//apply plugin: 'war'
+//apply from: 'https://raw.github.com/gretty-gradle-plugin/gretty/master/pluginScripts/gretty.plugin'
+
+group 'com.saha'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+
+sourceSets {
+    main {
+        java {
+            srcDir 'src/gen/java'
+        }
+    }
+}
+
+openApiGenerate {
+    generatorName = "jaxrs-jersey"
+    inputSpec = "$rootDir/src/main/resources/employee_openapi.yml".toString()
+    outputDir = "$rootDir".toString()
+    //httpUserAgent = "OpenAPI-Generator/4.0.0/java"
+    apiPackage = "com.saha.rest.resources"
+    invokerPackage = "com.saha.rest"
+    modelPackage = "com.saha.rest.model"
+    modelFilesConstrainedTo = []
+    configOptions = [
+            dateLibrary: "java8"
+    ]
+    /*systemProperties = [
+            apis: "false",
+            models: "",
+    ]*/
+}
+
+task cleanSources() {
+    doLast {
+        delete "${rootDir}/src/gen/java/"
+        delete "${rootDir}/src/main/java/"
+        println "cleanSources task completed."
+    }
+}
+
+
+task buildSources(dependsOn: 'openApiGenerate') {
+    doLast {
+        //This code removes some model files which had AllOf in name (not required files)
+        File srcDir = file("${rootDir}/src/gen/java/com/saha/rest/model/")
+        FileCollection collection = layout.files { srcDir.listFiles() }
+        collection.each { File file ->
+            if (file.name.contains("AllOf.java")) {
+                delete file
+            }
+        }
+        print "removed some model files which had AllOf in name"
+    }
+}
+
+dependencies {
+
+    // For Codegen and resources
+    compile (group: 'io.swagger', name: 'swagger-jersey2-jaxrs', version: '1.5.18')
+    compile (group: 'javax.servlet', name: 'servlet-api', version: '2.5')
+    compile (group: 'org.glassfish.jersey.containers', name: 'jersey-container-servlet-core', version: '2.27')
+    compile (group: 'org.glassfish.jersey.media', name: 'jersey-media-multipart', version: '2.27')
+    compile (group: 'org.glassfish.jersey.inject', name: 'jersey-hk2', version: '2.27')
+    compile (group: 'com.fasterxml.jackson.datatype', name: 'jackson-datatype-jsr310', version: '2.8.9')
+    compile (group: 'com.fasterxml.jackson.jaxrs', name: 'jackson-jaxrs-json-provider', version: '2.8.9')
+    compile (group: 'com.brsanthu', name: 'migbase64', version: '2.2')
+    compile (group: 'org.glassfish.jersey.ext', name: 'jersey-bean-validation', version: '2.27')
+
+    //For Guice servlet
+    implementation "com.google.inject:guice:4.1.0"
+    implementation "com.google.inject.extensions:guice-servlet:4.1.0"
+    implementation "com.sun.jersey:jersey-bundle:1.18.1"
+    implementation "com.sun.jersey.contribs:jersey-guice:1.18.1"
+}
