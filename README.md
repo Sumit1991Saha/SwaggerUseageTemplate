@@ -11,7 +11,7 @@ Jersey is used as JAX-RS implementation, `io.swagger:swagger-jersey2-jaxrs` is u
 To generate the model files, run the following command:-
 ./gradlew cleanSources openApiGenerate
 
-To run the server, please execute the following:
+To run on the jetty server, please execute the following:
 
 ```
 mvn clean package jetty:run
