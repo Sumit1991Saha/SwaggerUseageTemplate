@@ -3,4 +3,3 @@ target
 .gradle/
 src/gen/java/
 src/main/java/
-gradle/
