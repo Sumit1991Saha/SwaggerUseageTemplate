@@ -36,7 +36,7 @@ openApiGenerate {
     inputSpec = "$rootDir/src/main/resources/employee_openapi.yml".toString()
     outputDir = "$rootDir".toString()
     //httpUserAgent = "OpenAPI-Generator/4.0.0/java"
-    apiPackage = "com.saha.rest.resources"
+    apiPackage = "com.saha.rest.resources"     //Uncomment this line to generate the factory and impl class if needed/
     invokerPackage = "com.saha.rest"
     modelPackage = "com.saha.rest.model"
     modelFilesConstrainedTo = []
@@ -52,7 +52,6 @@ openApiGenerate {
 task cleanSources() {
     doLast {
         delete "${rootDir}/src/gen/java/"
-        delete "${rootDir}/src/main/java/"
         println "cleanSources task completed."
     }
 }
@@ -94,4 +93,8 @@ dependencies {
     implementation "com.google.inject.extensions:guice-servlet:4.1.0"
     implementation "com.sun.jersey:jersey-bundle:1.18.1"
     implementation "com.sun.jersey.contribs:jersey-guice:1.18.1"
+
+//    compile (group: 'org.hibernate', name: 'hibernate-entitymanager', version: '4.3.6.Final')
+//    compile (group: 'org.hibernate', name: 'hibernate-c3p0', version: '4.3.6.Final')
+//    compile (group: 'mysql', name: 'mysql-connector-java', version: '5.1.31')
 }

@@ -16,6 +16,10 @@ To run on the jetty server, please execute the following:
 ```
 mvn clean package jetty:run
 ```
+For Debug, run :-
+```
+mvnDebug clean package jetty:run
+```
 To debug the application on jetty server, run the following:-
 export MAVEN_OPTS="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
 
