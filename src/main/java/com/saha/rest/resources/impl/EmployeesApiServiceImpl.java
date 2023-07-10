@@ -21,6 +21,8 @@ public class EmployeesApiServiceImpl extends EmployeesApiService {
     private static EntityTransaction tx = em.getTransaction();
     private static CrudService<EmployeeEntity> service = new CrudService<>(EmployeeEntity.class, em);
 
+    private static final String SCHEMA_NAME = "openapi";
+
     @Override
     public Response createEmployee(Long applicationId, Employee employee, SecurityContext securityContext) throws NotFoundException {
         EmployeeEntity employeeEntity = new EmployeeEntity();
@@ -28,7 +30,10 @@ public class EmployeesApiServiceImpl extends EmployeesApiService {
         try {
             tx.begin();
             service.create(employeeEntity);
-            //long empId = service.getNextSequenceId(EmployeeEntity.class, em);
+            long empId = service.getNextSequenceId(EmployeeEntity.class, SCHEMA_NAME, em);
+            if (empId !=0) {
+                employee.setId(empId);
+            }
             tx.commit();
             return Response.ok().entity(employee).build();
         } catch (Exception e) {

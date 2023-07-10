@@ -3,8 +3,12 @@ package com.saha.service;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.engine.spi.SessionImplementor;
+import org.hibernate.jpa.internal.metamodel.MetamodelImpl;
+import org.hibernate.metadata.ClassMetadata;
 import org.hibernate.persister.entity.AbstractEntityPersister;
+import org.hibernate.persister.entity.EntityPersister;
 
+import java.math.BigInteger;
 import java.util.List;
 import javax.persistence.EntityManager;
 
@@ -26,12 +30,23 @@ public class CrudService<T> {
         em.persist(object);
     }
 
-    public long getNextSequenceId(Class<?> entityClass, EntityManager entityManager) {
+    public long getNextSequenceId(Class<?> entityClass, String schemaName, EntityManager entityManager) {
         Session hibernateSession = getHibernateSession(entityManager);
         SessionFactory sessionFactory = hibernateSession.getSessionFactory();
-        return (long) (Long) ((AbstractEntityPersister) sessionFactory
-                .getClassMetadata(entityClass)).getIdentifierGenerator()
-                .generate((SessionImplementor) hibernateSession, null);
+
+        ClassMetadata hibernateMetadata = sessionFactory.getClassMetadata(entityClass);
+
+        if (hibernateMetadata instanceof AbstractEntityPersister)
+        {
+            AbstractEntityPersister persister = (AbstractEntityPersister) hibernateMetadata;
+            String tableName = persister.getTableName();
+            String queryString = "SELECT AUTO_INCREMENT FROM information_schema.tables" +
+                    " WHERE table_name = '" + tableName + "'" +
+                    " AND table_schema = '" + schemaName + "'";
+            int nextSequence = ((BigInteger)em.createNativeQuery(queryString).getSingleResult()).intValueExact();
+            return nextSequence - 1;
+        }
+        return 0;
     }
 
     private Session getHibernateSession(EntityManager entityManager) {
